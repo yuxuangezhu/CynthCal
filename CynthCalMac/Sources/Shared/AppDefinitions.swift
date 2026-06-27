@@ -102,6 +102,13 @@ enum Localized {
     static let alertExplanationSetCustomFontSize = String(localized: "Please enter a font size (in points) for the custom text icon, e.g. 13. Leave it empty to use the default size.", comment: "[Alert] Explanation for custom icon font size")
     static let alertButtonTitleApplyChanges = String(localized: "Apply Changes", comment: "[Alert] Apply the custom date format")
 
+    // Weather
+    static let menuTitleWeather = String(localized: "Weather", comment: "[Menu] Weather background settings")
+    static let menuTitleWeatherBackground = String(localized: "Weather Background", comment: "[Menu] Toggle the weather-based background")
+    static let menuTitleSetCity = String(localized: "Set City…", comment: "[Menu] Configure the city for weather")
+    static let alertMessageSetCity = String(localized: "Set City", comment: "[Alert] Configure the weather city")
+    static let alertExplanationSetCity = String(localized: "Please enter a city name for the weather background, e.g. Beijing or Tokyo.", comment: "[Alert] Explanation for weather city")
+
     // Accessibility
     static let accessibilityWeekdayArea = String(localized: "Weekday symbol area", comment: "[AX] Indicate the current group is for weekday symbols")
     static let accessibilityDateGridArea = String(localized: "Date grid area", comment: "[AX] Indicate the current group is for date grids")

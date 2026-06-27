@@ -9,3 +9,5 @@ Local.xcconfig
 build/
 CynthCal.app/
 *.zip
+CynthCal.dmg
+*.dmg

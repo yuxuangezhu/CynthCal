@@ -22,6 +22,14 @@ final class AppMainVC: NSViewController {
   private let headerView = HeaderView()
   private let weekdayView = WeekdayView()
   private let dateGridView = DateGridView()
+  private let weatherBackgroundView = WeatherBackgroundView()
+  private var weatherObserver: NSObjectProtocol?
+
+  deinit {
+    if let weatherObserver {
+      NotificationCenter.default.removeObserver(weatherObserver)
+    }
+  }
 
   // Factory function
   static func createPopover() -> NSPopover {
@@ -51,6 +59,14 @@ extension AppMainVC {
     super.viewDidLoad()
     setUp()
     observeKeyEvents()
+
+    weatherObserver = NotificationCenter.default.addObserver(
+      forName: .weatherConditionDidChange,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.updateWeatherBackground()
+    }
   }
 
   override func viewWillAppear() {
@@ -59,6 +75,12 @@ extension AppMainVC {
 
     updateAppearance()
     updateCalendar()
+    updateWeatherBackground()
+
+    // Proactively refresh weather so a freshly opened panel shows the latest condition
+    if AppPreferences.Weather.enabled {
+      Task { await WeatherManager.shared.refresh() }
+    }
   }
 
   // MARK: - Updating
@@ -94,6 +116,15 @@ extension AppMainVC {
   func togglePinnedOnTop() {
     pinnedOnTop.toggle()
     popover?.behavior = pinnedOnTop ? .applicationDefined : .transient
+  }
+
+  /// Refreshes the weather background to match the current preference and condition.
+  func updateWeatherBackground() {
+    // Hidden entirely when the feature is off or no condition is available yet.
+    // Hiding (rather than just clearing the image) keeps the underlying vibrancy material visible.
+    let condition = AppPreferences.Weather.enabled ? WeatherManager.shared.currentCondition : nil
+    weatherBackgroundView.isHidden = (condition == nil)
+    weatherBackgroundView.update(condition: condition)
   }
 }
 
@@ -167,6 +198,14 @@ private extension AppMainVC {
       dateGridView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -margin),
       dateGridView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -margin),
     ])
+
+    // Weather background sits behind everything, filling the whole container.
+    // Use autoresizing (not Auto Layout) so it never participates in the container's
+    // intrinsic size negotiation, which could collapse the whole panel.
+    weatherBackgroundView.frame = view.bounds
+    weatherBackgroundView.autoresizingMask = [.width, .height]
+    view.addSubview(weatherBackgroundView, positioned: .below, relativeTo: headerView)
+    updateWeatherBackground()
   }
 
   func observeKeyEvents() {

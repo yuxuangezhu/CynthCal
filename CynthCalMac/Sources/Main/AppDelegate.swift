@@ -32,6 +32,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Prepare public holiday data
     _ = HolidayManager.default
 
+    // Start the weather refresh loop if the feature is enabled
+    if AppPreferences.Weather.enabled {
+      WeatherManager.shared.start()
+    }
+
     // Update the icon and attach it to the menu bar
     updateMenuBarIcon()
     statusItem.isVisible = true

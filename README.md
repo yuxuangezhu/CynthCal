@@ -10,6 +10,8 @@
 
 <img src="./Screenshots/01.png" width="320" alt="截图 01"> <img src="./Screenshots/02.png" width="320" alt="截图 02">
 
+<img src="./Screenshots/03.png" width="320" alt="天气背景">
+
 ## 安装 CynthCal
 
 从 <a href="https://github.com/yuxuangezhu/CynthCal/releases/latest" target="_blank">latest release</a> 获取 `CynthCal.dmg` / `CynthCal.app`，打开后将 `CynthCal.app` 拖拽至 `Applications` 即可。
@@ -23,6 +25,7 @@
 在原版农历日历的基础上，本 fork 增加了以下功能：
 
 - **农历 / 公历纪念日**：在状态栏日历中标记个人纪念日和生日，支持按农历或公历循环；提供独立的 GUI 管理窗口进行增删改。
+- **天气日历背景**：日历面板背景根据当天天气自动切换氛围图（晴/云/雨/雪/雾/雷暴），数据来自 wttr.in，默认关闭，可按城市自定义。
 - **时辰与干支**：自定义外观格式新增 `{{ lunarInfo('shichen') }}`（单字地支）、`{{ lunarInfo('shichenName') }}`（完整时辰名）、`{{ lunarInfo('ganZhi') }}`（年柱干支）。
 - **周首日设置**：Appearance 菜单新增「每周第一天」选项（跟随系统 / 周日 / 周一）。
 - **自定义图标字号**：可调整状态栏自定义文本图标的字号。
@@ -36,6 +39,7 @@
 - 需要查看农历
 - 需要查看公共假日
 - 需要记录农历 / 公历纪念日
+- 想要日历随天气变换氛围
 - 喜欢极致的应用
 - 喜欢简单的事物
 

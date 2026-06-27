@@ -2833,6 +2833,23 @@
         }
       }
     },
+    "Please enter a city name for the weather background, e.g. Beijing or Tokyo.": {
+      "comment": "[Alert] Explanation for weather city",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请输入天气背景所用的城市名，如 北京 或 东京。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請輸入天氣背景所用的城市名，如 北京 或 東京。"
+          }
+        }
+      }
+    },
     "Please enter a font size (in points) for the custom text icon, e.g. 13. Leave it empty to use the default size.": {
       "comment": "[Alert] Explanation for custom icon font size",
       "localizations": {
@@ -3361,6 +3378,40 @@
         }
       }
     },
+    "Set City": {
+      "comment": "[Alert] Configure the weather city",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置城市"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定城市"
+          }
+        }
+      }
+    },
+    "Set City…": {
+      "comment": "[Menu] Configure the city for weather",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置城市…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定城市…"
+          }
+        }
+      }
+    },
     "Set Custom Font Size": {
       "comment": "[Alert] Configure the font size of the custom text icon",
       "localizations": {
@@ -3607,6 +3658,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "今天"
+          }
+        }
+      }
+    },
+    "Weather": {
+      "comment": "[Menu] Weather background settings",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天气"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天氣"
+          }
+        }
+      }
+    },
+    "Weather Background": {
+      "comment": "[Menu] Toggle the weather-based background",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天气背景"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "天氣背景"
           }
         }
       }

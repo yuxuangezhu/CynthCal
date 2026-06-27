@@ -23,6 +23,7 @@ extension AppMainVC {
     menu.addItem(menuItemCalendars)
     menu.addItem(menuItemPublicHolidays)
     menu.addItem(menuItemAnniversaries)
+    menu.addItem(menuItemWeather)
     menu.addItem(menuItemLaunchAtLogin)
 
     menu.addSeparator()
@@ -479,6 +480,86 @@ private extension AppMainVC {
     let item = NSMenuItem(title: Localized.UI.menuTitleAnniversaries)
     item.submenu = menu
     return item
+  }
+
+  var menuItemWeather: NSMenuItem {
+    let menu = NSMenu()
+
+    menu.addItem(withTitle: Localized.UI.menuTitleWeatherBackground) { [weak self] in
+      AppPreferences.Weather.enabled.toggle()
+      if AppPreferences.Weather.enabled {
+        WeatherManager.shared.start()
+      } else {
+        WeatherManager.shared.stop()
+      }
+      self?.updateWeatherBackground()
+    }
+    .setOn(AppPreferences.Weather.enabled)
+
+    menu.addSeparator()
+
+    menu.addItem(withTitle: Localized.UI.menuTitleSetCity) { [weak self] in
+      self?.showSetCityAlert()
+    }
+
+    let item = NSMenuItem(title: Localized.UI.menuTitleWeather)
+    item.submenu = menu
+    return item
+  }
+
+  /// Presents an alert to configure the weather city.
+  func showSetCityAlert() {
+    let alert = NSAlert()
+    alert.messageText = Localized.UI.alertMessageSetCity
+    alert.addButton(withTitle: Localized.UI.alertButtonTitleApplyChanges)
+    alert.addButton(withTitle: Localized.General.cancel)
+
+    let inputField = EditableTextField(frame: CGRect(x: 0, y: 0, width: 256, height: 22))
+    inputField.cell?.usesSingleLineMode = true
+    inputField.cell?.lineBreakMode = .byTruncatingTail
+    inputField.placeholderString = "Beijing"
+
+    if let city = AppPreferences.Weather.city {
+      inputField.stringValue = city
+    }
+
+    let textView = NSTextView.markdownView(
+      with: Localized.UI.alertExplanationSetCity,
+      contentWidth: inputField.frame.width
+    )
+    textView.frame = CGRect(origin: CGPoint(x: 0, y: inputField.frame.height + 15), size: textView.frame.size)
+
+    let wrapper = NSView(frame: {
+      var rect = textView.frame
+      rect.size.height += textView.frame.minY
+      return rect
+    }())
+
+    wrapper.addSubview(textView)
+    wrapper.addSubview(inputField)
+    alert.accessoryView = wrapper
+    alert.layout()
+
+    @MainActor
+    func showAlert() {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        inputField.window?.makeFirstResponder(inputField)
+      }
+
+      guard alert.runModal() == .alertFirstButtonReturn else {
+        return
+      }
+
+      let trimmed = inputField.stringValue.trimmingCharacters(in: .whitespaces)
+      AppPreferences.Weather.city = trimmed.isEmpty ? nil : trimmed
+
+      // Re-fetch immediately so the background reflects the new city
+      if AppPreferences.Weather.enabled {
+        WeatherManager.shared.start()
+      }
+    }
+
+    showAlert()
   }
 
   var menuItemLaunchAtLogin: NSMenuItem {

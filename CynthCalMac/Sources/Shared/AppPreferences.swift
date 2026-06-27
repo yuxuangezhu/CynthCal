@@ -87,6 +87,20 @@ enum AppPreferences {
       reduceTransparency ? .windowBackground : .menu
     }
   }
+
+  enum Weather {
+    /// Whether the weather background is enabled. Off by default.
+    @Storage(key: "weather.enabled", defaultValue: false)
+    static var enabled: Bool
+
+    /// The city name used to fetch weather, e.g. "Beijing". nil means not configured.
+    @Storage(key: "weather.city", defaultValue: nil)
+    static var city: String?
+
+    /// Whether to use the device location instead of a manual city. Off by default.
+    @Storage(key: "weather.use-location", defaultValue: false)
+    static var useLocation: Bool
+  }
 }
 
 // MARK: - Types
