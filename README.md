@@ -55,10 +55,6 @@
 
 可以。原版仍可通过 `brew install --cask lunarbar` 安装。本 fork 的版本需从本仓库的 [releases](https://github.com/yuxuangezhu/CynthCal/releases) 获取。
 
-**为什么不开发 iOS 版本 / 小组件版本**
+**关于原版的开发动机、为什么不开发 iOS / 小组件等更多背景**
 
-这部分沿用原作者的判断：iOS 没有状态栏，通知中心小组件也已不再合适，暂不开发。
-
-**LunarBar 是怎么开发的**
-
-如果你作为开发者对 LunarBar 的开发过程感兴趣，请参考[这篇文章](./DEV.md)。
+这些内容来自原作者，请直接参考原项目的 [README](https://github.com/LunarBar-app/LunarBar#readme)。
