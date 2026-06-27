@@ -4,3 +4,8 @@
 ## User settings
 xcuserdata/
 Local.xcconfig
+
+# Build outputs
+build/
+CynthCal.app/
+*.zip

@@ -1,6 +1,6 @@
 //
 //  Build.xcconfig
-//  LunarBarMac
+//  CynthCalMac
 //
 //  Created by cyan on 12/21/23.
 //
@@ -10,7 +10,7 @@ CODE_SIGN_IDENTITY = -
 DEVELOPMENT_TEAM =
 PRODUCT_BUNDLE_IDENTIFIER = app.cyan.lunarbar-dev
 
-MARKETING_VERSION = 1.9.0
-CURRENT_PROJECT_VERSION = 20
+MARKETING_VERSION = 2.0.0
+CURRENT_PROJECT_VERSION = 21
 
 #include? "Local.xcconfig"

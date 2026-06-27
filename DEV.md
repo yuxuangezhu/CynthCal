@@ -1,5 +1,10 @@
 # LunarBar 的开发
 
+> [!NOTE]
+> 本仓库是 [cyan/LunarBar](https://github.com/LunarBar-app/LunarBar) 的 fork。以下文章由原作者 cyan 撰写，完整记录了 LunarBar 的设计思路与开发难点，本 fork 保留原文以致敬并方便后来者理解项目的核心理念。本 fork 的增量改动（农历 / 公历纪念日、时辰干支、周首日设置等）遵循了文中「除非万不得已，尽可能地依赖系统行为」这一原则。
+
+也许是因为疯了，我才会在 2023 年末开发一款日历应用。我第一次发布日历应用是在十年前，这种没多少新意的产品似乎不值得投入。
+
 也许是因为疯了，我才会在 2023 年末开发一款日历应用。我第一次发布日历应用是在十年前，这种没多少新意的产品似乎不值得投入。
 
 但遗憾的是，截止到 [LunarBar](https://github.com/LunarBar-app/LunarBar) 发布前，我都觉得 Mac 的状态栏没有一款日历堪称完美。
@@ -67,7 +72,7 @@ formatter.timeStyle = .none
 
 关键是，支持二十四节气并不容易。
 
-是的，你可以在网上找到很多种计算公式。遗憾的是，它们几乎都是错的，或者说不能 100% 正确。所以正如我所说，这个部分最安全的做法就是打表，LunarBar 内置了 200 年的天文台数据，并且压缩成了一个只有 35 KB 的[文件](https://github.com/LunarBar-app/LunarBar/blob/main/LunarBarKit/Sources/LunarCalendar/Resources/data.json)。
+是的，你可以在网上找到很多种计算公式。遗憾的是，它们几乎都是错的，或者说不能 100% 正确。所以正如我所说，这个部分最安全的做法就是打表，LunarBar 内置了 200 年的天文台数据，并且压缩成了一个只有 35 KB 的[文件](https://github.com/LunarBar-app/LunarBar/blob/main/CynthCalKit/Sources/LunarCalendar/Resources/data.json)。
 
 另外，系统行为也不总是那么符合预期。
 

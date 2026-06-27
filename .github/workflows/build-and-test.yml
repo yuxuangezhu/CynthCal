@@ -9,7 +9,7 @@ on:
 
 jobs:
   lunarbar-mac:
-    name: LunarBarMac
+    name: CynthCalMac
     runs-on: macos-26
     if: github.event.pull_request.draft == false
     env:
@@ -17,14 +17,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - name: Build LunarBarMac
+      - name: Build CynthCalMac
         run: |
-          xcodebuild build -scheme LunarBarMac -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+          xcodebuild build -scheme CynthCalMac -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 
-      - name: Test LunarBarKitTests
+      - name: Test CynthCalKitTests
         run: |
-          xcodebuild test -scheme LunarBarKitTests -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+          xcodebuild test -scheme CynthCalKitTests -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 
-      - name: Test LunarBarMacTests
+      - name: Test CynthCalMacTests
         run: |
-          xcodebuild test -scheme LunarBarMacTests -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+          xcodebuild test -scheme CynthCalMacTests -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO

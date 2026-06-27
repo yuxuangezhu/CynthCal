@@ -1,9 +1,9 @@
-project: LunarBar.xcodeproj
+project: CynthCal.xcodeproj
 retain_public: true
 schemes:
-- LunarBarMac
+- CynthCalMac
 targets:
-- LunarBarKit.LunarBarKit
-- LunarBarMac
+- CynthCalKit.CynthCalKit
+- CynthCalMac
 - Modules.AppKitControls
 - Modules.AppKitExtensions

@@ -413,6 +413,12 @@ opt_in_rules:
   # Prefer specific XCTest matchers over `XCTAssertEqual` and `XCTAssertNotEqual`
   - xct_specific_matcher
 
+# Exclude build outputs and tool-generated files that are not part of the source
+excluded:
+  - build
+  - "**/DerivedSources"
+  - "**/.build"
+
 attributes:
   always_on_same_line: ["@IBAction", "@IBSegueAction", "@NSManaged", "@escaping", "@objc", "@frozen"]
 

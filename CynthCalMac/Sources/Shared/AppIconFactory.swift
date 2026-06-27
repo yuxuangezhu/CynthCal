@@ -1,0 +1,331 @@
+//
+//  AppIconFactory.swift
+//  CynthCalMac
+//
+//  Created by cyan on 1/8/24.
+//
+
+import AppKit
+import CynthCalKit
+@preconcurrency import JavaScriptCore
+
+extension Notification.Name {
+  static let menuBarIconDidChange = Notification.Name("MenuBarIconDidChange")
+}
+
+@MainActor
+func customDateText() -> String? {
+  guard let dateFormat = AppPreferences.General.customDateFormat, !dateFormat.isEmpty else {
+    return nil
+  }
+
+  // The resolved format may change every second when it embeds {{expr}} results,
+  // so we cache the formatter by the resolved string to reuse it when it hasn't changed.
+  let resolvedFormat = JSEvaluator.resolve(input: dateFormat)
+  return CustomDateFormatFormatter.formatter(for: resolvedFormat).string(from: Date.now)
+}
+
+@MainActor
+enum DateIconStyle {
+  case filled
+  case outlined
+}
+
+@MainActor
+enum AppIconFactory {
+  private enum Constants {
+    static let defaultIconSize: Double = 16
+  }
+
+  static func createDateIcon(style: DateIconStyle) -> NSImage? {
+    DateIconView(style: style).snapshotImage?.asTemplate
+  }
+
+  static func createCalendarIcon(pointSize: Double = Constants.defaultIconSize) -> NSImage? {
+    createSystemSymbol(named: Icons.calendar, pointSize: pointSize)
+  }
+
+  static func createSystemIcon(pointSize: Double = Constants.defaultIconSize) -> NSImage? {
+    createSystemSymbol(named: AppPreferences.General.systemSymbolName, pointSize: pointSize)
+  }
+
+  static func createCustomIcon() -> NSImage? {
+    guard let text = customDateText() else {
+      return .with(symbolName: Icons.exclamationmarkTriangle, pointSize: 15)
+    }
+
+    let image: NSImage = .with(text: text, font: .menuBarMonospacedDigitFont(ofSize: AppPreferences.General.customIconFontSize))
+    return image.asTemplate
+  }
+
+  private static func createSystemSymbol(named symbolName: String?, pointSize: Double) -> NSImage? {
+    guard let symbolName else {
+      return nil
+    }
+
+    return .with(symbolName: symbolName, pointSize: pointSize).asTemplate
+  }
+}
+
+// MARK: - Private
+
+private class DateIconView: NSView {
+  private enum Constants {
+    static let iconSize = CGSize(width: 21, height: 15)
+    static let fontSize: Double = 12
+    static let textHeight: Double = 8.5
+    static let cornerRadius: Double = 2.5
+    static let borderWidth: Double = 2.0
+  }
+
+  private var currentDay: Int {
+    Calendar.solar.component(.day, from: .now)
+  }
+
+  private let style: DateIconStyle
+
+  init(style: DateIconStyle) {
+    self.style = style
+    super.init(frame: CGRect(origin: .zero, size: Constants.iconSize))
+
+    wantsLayer = true
+    layer?.cornerCurve = .continuous
+    layer?.cornerRadius = Constants.cornerRadius
+
+    if style == .filled {
+      renderFilledIcon()
+    }
+  }
+
+  @available(*, unavailable)
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+
+  override var isFlipped: Bool {
+    false
+  }
+
+  override func draw(_ dirtyRect: CGRect) {
+    super.draw(dirtyRect)
+
+    if style == .outlined {
+      renderOutlinedIcon()
+    }
+  }
+
+  private func renderFilledIcon() {
+    // Resolve the color because .black doesn't work well with NSMenuItem, even when the image is template
+    let tintColor: NSColor = NSApp.effectiveAppearance.isDarkMode ? .white : .black
+    layerBackgroundColor = tintColor
+
+    let currentDay = self.currentDay
+    let labelFont = NSFont.boldSystemFont(ofSize: Constants.fontSize)
+
+    // Calculate the rendering width using an attributed string
+    let textWidth = NSAttributedString(
+      string: String(currentDay),
+      attributes: [.font: labelFont]
+    ).size().width
+
+    // Create the path from text and make sure it's optically aligned
+    let textPath = NSBezierPath.from(text: String(currentDay), font: labelFont, isFlipped: isFlipped)
+    let transform = AffineTransform(
+      translationByX: (bounds.width - textWidth) * 0.5,
+      byY: (bounds.height - Constants.textHeight) * 0.5
+    )
+
+    textPath.transform(using: transform)
+    textPath.append(NSBezierPath(rect: bounds))
+
+    let shapeLayer = CAShapeLayer()
+    shapeLayer.path = textPath.cgPath
+    layer?.mask = shapeLayer
+  }
+
+  private func renderOutlinedIcon() {
+    let radius = Constants.cornerRadius
+    let border = NSBezierPath(roundedRect: bounds, xRadius: radius, yRadius: radius)
+    border.lineWidth = Constants.borderWidth
+    border.stroke()
+
+    let attributes: [NSAttributedString.Key: Any] = [
+      .font: NSFont.systemFont(ofSize: Constants.fontSize),
+      .foregroundColor: NSColor.black,
+    ]
+
+    let label = String(currentDay)
+    let size = label.size(withAttributes: attributes)
+    let rect = CGRect(
+      x: bounds.midX - size.width * 0.5,
+      y: bounds.midY - size.height * 0.5,
+      width: size.width,
+      height: size.height
+    )
+
+    label.draw(in: rect, withAttributes: attributes)
+  }
+}
+
+@MainActor
+private enum JSEvaluator {
+  // E.g., {{ 1 + 1 }}
+  static let pattern = /\{\{(.*?)\}\}/
+
+  static let context: JSContext? = {
+    let setTimeout: @convention(block) (JSValue, Int) -> Void = { callback, delay in
+      DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(delay)) {
+        callback.call(withArguments: [])
+      }
+    }
+
+    let reload: @convention(block) () -> Void = {
+      NotificationCenter.default.post(name: .menuBarIconDidChange, object: nil)
+    }
+
+    let lunarInfo: @convention(block) (String, JSValue) -> String? = { key, date in
+      Self.lunarInfo(key: key, date: date.safelyToDate(fallback: .now))
+    }
+
+    let holidayInfo: @convention(block) (JSValue) -> String? = { date in
+      Self.holidayInfo(date: date.safelyToDate(fallback: .now))
+    }
+
+    let context = JSContext()
+    context?.setObject(setTimeout, forKeyedSubscript: "setTimeout" as NSString)
+    context?.setObject(reload, forKeyedSubscript: "reload" as NSString)
+    context?.setObject(lunarInfo, forKeyedSubscript: "lunarInfo" as NSString)
+    context?.setObject(holidayInfo, forKeyedSubscript: "holidayInfo" as NSString)
+    return context
+  }()
+
+  /**
+   Replace all {{expr}} instances with the evaluated result.
+   */
+  static func resolve(input: String) -> String {
+    input.replacing(pattern) {
+      let expr = String($0.1)
+      let result = context?.evaluateScript(expr).toString()
+      return result ?? expr
+    }
+  }
+}
+
+// MARK: - Helpers
+
+@MainActor
+private extension JSEvaluator {
+  /**
+   Compute a lunar calendar value for the given key and date.
+
+   Supported keys: day, month, solarTerm, festival.
+   */
+  static func lunarInfo(key: String, date: Date) -> String? {
+    let lunarCalendar = Calendar.lunar
+    let lunarComponents = lunarCalendar.dateComponents([.month, .day], from: date)
+
+    switch key {
+    case "day":
+      if let day = lunarComponents.day {
+        return AppLocalizer.chineseDay(of: day - 1)
+      }
+
+      return nil
+    case "month":
+      if let month = lunarComponents.month {
+        return AppLocalizer.chineseMonth(of: month - 1, isLeap: lunarCalendar.isLeapMonth(from: date))
+      }
+
+      return nil
+    case "solarTerm":
+      let solarCalendar = Calendar.solar
+      let solarComponents = solarCalendar.dateComponents([.year, .month, .day], from: date)
+      let solarYear = solarComponents.year ?? 0
+
+      if let index = LunarCalendar.default.info(of: solarYear)?.solarTerms[solarComponents.fourDigitsMonthDay] {
+        return AppLocalizer.solarTerm(of: index)
+      }
+
+      return nil
+    case "festival":
+      if lunarCalendar.isLastDayOfYear(from: date) {
+        return Localized.Calendar.chineseNewYearsEve
+      }
+
+      return AppLocalizer.lunarFestival(of: lunarComponents.fourDigitsMonthDay)
+    case "shichen":
+      // Single Earthly Branch for the current hour, e.g. 子
+      let hour = Calendar.solar.component(.hour, from: date)
+      return AppLocalizer.earthlyBranch(of: hour)
+    case "shichenName":
+      // Full shichen name for the current hour, e.g. 子时
+      let hour = Calendar.solar.component(.hour, from: date)
+      return AppLocalizer.shichenName(of: hour)
+    case "ganZhi":
+      // Year pillar (e.g. 癸卯), parsed from the system lunar date formatter
+      return Self.ganZhiYear(from: date)
+    default:
+      return nil
+    }
+  }
+
+  /**
+   Extracts the GanZhi year pillar (e.g. 癸卯) from the system's lunar date formatter output.
+
+   Rather than implementing our own stem/branch calculation, we reuse the system formatter
+   (per the project's philosophy of relying on system behavior) and parse out the two
+   Chinese characters that follow "年" in strings like "2023年癸卯冬月十九".
+   */
+  static func ganZhiYear(from date: Date) -> String? {
+    let formatted = DateFormatter.lunarDate.string(from: date)
+    if let match = formatted.firstMatch(of: /年(\p{Han}{2})/) {
+      return String(match.1)
+    }
+
+    return nil
+  }
+
+  /**
+   Returns the holiday status for the given date, or nil if not a special day.
+   */
+  static func holidayInfo(date: Date) -> String? {
+    let components = Calendar.solar.dateComponents([.year, .month, .day], from: date)
+    let monthDay = components.fourDigitsMonthDay
+
+    let holidayType = HolidayManager.default.typeOf(
+      year: components.year ?? 0,
+      monthDay: monthDay
+    )
+
+    switch holidayType {
+    case .workday:
+      return Localized.Calendar.workdayLabel
+    case .holiday:
+      return Localized.Calendar.holidayLabel
+    case .none:
+      return nil
+    }
+  }
+}
+
+// MARK: - CustomDateFormatFormatter
+
+@MainActor
+private enum CustomDateFormatFormatter {
+  /// Caches a single DateFormatter, reconfigured only when the resolved format changes.
+  /// Avoids allocating a new formatter on every per-second tick.
+  private static var cachedFormatter: DateFormatter?
+  private static var cachedFormat: String?
+
+  static func formatter(for resolvedFormat: String) -> DateFormatter {
+    if cachedFormat == resolvedFormat, let cachedFormatter {
+      return cachedFormatter
+    }
+
+    let formatter = DateFormatter()
+    formatter.dateFormat = resolvedFormat
+    cachedFormat = resolvedFormat
+    cachedFormatter = formatter
+    return formatter
+  }
+}
