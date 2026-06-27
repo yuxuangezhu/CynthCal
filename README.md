@@ -1,6 +1,6 @@
 <img src="./Icon.png" width="96">
 
-# LunarBar
+# CynthCal
 
 [![](https://img.shields.io/badge/Platform-macOS_15.0+-blue?color=007bff)](https://github.com/yuxuangezhu/CynthCal/releases/latest) [![](https://github.com/yuxuangezhu/CynthCal/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/yuxuangezhu/CynthCal/actions/workflows/build-and-test.yml) [![](https://img.shields.io/badge/Fork%20of-cyan%2FLunarBar-orange)](https://github.com/LunarBar-app/LunarBar)
 
@@ -28,7 +28,7 @@
 - **自定义图标字号**：可调整状态栏自定义文本图标的字号。
 - **日期格交互优化**：单击选中、双击才在系统日历打开。
 
-## 使用 LunarBar 的理由
+## 使用 CynthCal 的理由
 
 如果你是这类人，欢迎试试：
 
@@ -39,7 +39,7 @@
 - 喜欢极致的应用
 - 喜欢简单的事物
 
-请不要期待过高，LunarBar 的极简设计是经过深思熟虑的结果。当它不能满足你的需求时，不妨试试其他产品。
+请不要期待过高，CynthCal 的极简设计是经过深思熟虑的结果。当它不能满足你的需求时，不妨试试其他产品。
 
 ## 一些可能被问到的问题
 
