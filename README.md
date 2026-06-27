@@ -10,15 +10,13 @@
 
 <img src="./Screenshots/01.png" width="320" alt="截图 01"> <img src="./Screenshots/02.png" width="320" alt="截图 02">
 
-## 安装 LunarBar
+## 安装 CynthCal
 
-从 <a href="https://github.com/yuxuangezhu/CynthCal/releases/latest" target="_blank">latest release</a> 获取 `LunarBar.dmg` / `LunarBar.app`，打开后将 `LunarBar.app` 拖拽至 `Applications` 即可。
-
-<img src="./Screenshots/03.png" width="540" alt="安装 LunarBar">
+从 <a href="https://github.com/yuxuangezhu/CynthCal/releases/latest" target="_blank">latest release</a> 获取 `CynthCal.dmg` / `CynthCal.app`，打开后将 `CynthCal.app` 拖拽至 `Applications` 即可。
 
 你也可以在 [releases](https://github.com/yuxuangezhu/CynthCal/releases) 页面浏览历史版本。
 
-> 无需担心非 App Store 安装的可靠性，LunarBar 是沙盒应用，且经过签名和 [notarization](https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution) 认证。
+> 无需担心非 App Store 安装的可靠性，CynthCal 是沙盒应用，且经过签名和 [notarization](https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution) 认证。
 
 ## 本 fork 的新特性
 
