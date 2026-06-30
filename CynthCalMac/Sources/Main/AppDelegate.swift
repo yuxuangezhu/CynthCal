@@ -262,6 +262,11 @@ extension AppDelegate: NSPopoverDelegate {
   func popoverWillClose(_ notification: Notification) {
     popoverClosedTime = Date.timeIntervalSinceReferenceDate
     countingDate = nil
+
+    // Stop weather particle animations so they don't keep consuming CPU after the popover closes
+    if let vc = presentedPopover?.contentViewController as? AppMainVC {
+      vc.stopWeatherAnimation()
+    }
   }
 }
 

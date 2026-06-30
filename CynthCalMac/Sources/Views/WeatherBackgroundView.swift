@@ -15,6 +15,7 @@ import AppKit
  */
 final class WeatherBackgroundView: NSView {
   private let imageView = NSImageView()
+  private let particleLayer = WeatherParticleLayer()
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -44,21 +45,36 @@ final class WeatherBackgroundView: NSView {
     imageView.frame = bounds
 
     addSubview(imageView)
+
+    // Particle animation layer sits above the photo, below the calendar content
+    layer?.addSublayer(particleLayer)
   }
 
   override func layout() {
     super.layout()
     imageView.frame = bounds
+    // Cover the whole panel: position at center, size matches bounds
+    particleLayer.frame = bounds
+    particleLayer.emitterPosition = CGPoint(x: bounds.midX, y: bounds.midY)
+    particleLayer.emitterSize = bounds.size
   }
 
   /// Updates the displayed condition, or clears the background if nil.
   func update(condition: WeatherCondition?) {
     guard let condition else {
       imageView.image = nil
+      particleLayer.configure(for: nil)
       return
     }
 
     imageView.image = NSImage(named: condition.backgroundImageName)
+    particleLayer.configure(for: condition)
+  }
+
+  /// Stops particle animations and tears down timers (call when the popover closes to save CPU).
+  /// Animations resume automatically via update(condition:) the next time the popover opens.
+  func stopAnimating() {
+    particleLayer.stopAnimating()
   }
 
   private enum Constants {

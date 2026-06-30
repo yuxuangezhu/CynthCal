@@ -126,6 +126,11 @@ extension AppMainVC {
     weatherBackgroundView.isHidden = (condition == nil)
     weatherBackgroundView.update(condition: condition)
   }
+
+  /// Stops the weather particle animations (called when the popover closes to save CPU).
+  func stopWeatherAnimation() {
+    weatherBackgroundView.stopAnimating()
+  }
 }
 
 // MARK: - HeaderViewDelegate
